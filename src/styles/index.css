@@ -37,6 +37,27 @@
   padding: 0;
 }
 
+/* Permanently Hide Netlify Injected Badge Widget */
+.nl-wrap,
+#nl-card,
+#nl-badge,
+.nl-badge,
+.nl-card,
+[class*="nl-wrap"],
+[class*="nl-badge"],
+[id*="nl-badge"],
+[id*="nl-card"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  clip: rect(0, 0, 0, 0) !important;
+  z-index: -9999 !important;
+}
+
 body {
   background-color: var(--bg-main);
   color: var(--text-main);

@@ -10,6 +10,43 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
+    <!-- Hide & Remove Netlify Badge -->
+    <style>
+      .nl-wrap,
+      #nl-card,
+      #nl-badge,
+      .nl-badge,
+      .nl-card,
+      [class*="nl-wrap"],
+      [class*="nl-badge"],
+      [id*="nl-badge"],
+      [id*="nl-card"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        position: absolute !important;
+        z-index: -9999 !important;
+      }
+    </style>
+    <script>
+      (function() {
+        var removeBadge = function() {
+          var els = document.querySelectorAll('.nl-wrap, #nl-card, #nl-badge, .nl-badge, [class*="nl-wrap"]');
+          els.forEach(function(el) {
+            try { el.remove(); } catch(e) {}
+          });
+        };
+        if (window.MutationObserver) {
+          new MutationObserver(removeBadge).observe(document.documentElement, { childList: true, subtree: true });
+        }
+        window.addEventListener('DOMContentLoaded', removeBadge);
+        window.addEventListener('load', removeBadge);
+      })();
+    </script>
+
     <!-- Conditional Ad Network Loader (Active on Public & Link Pages, Hidden from Admin Dashboard) -->
     <script>
       (function() {

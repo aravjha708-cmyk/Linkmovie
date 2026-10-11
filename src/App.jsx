@@ -7,7 +7,6 @@ import AdminDashboard from './pages/AdminDashboard';
 import CreateLink from './pages/CreateLink';
 import ManageLinks from './pages/ManageLinks';
 import Analytics from './pages/Analytics';
-import AdsSettings from './pages/AdsSettings';
 import Settings from './pages/Settings';
 import AdminLogin from './pages/AdminLogin';
 import Interstitial from './pages/Interstitial';
@@ -118,7 +117,6 @@ function AppContent() {
       create: 'Create Movie Link',
       links: 'Manage Movie Links',
       analytics: 'Click & Funnel Analytics',
-      ads: 'Ad Placements',
       settings: 'Portal Settings'
     };
 
@@ -144,7 +142,6 @@ function AppContent() {
             {adminTab === 'create' && <CreateLink onNavigate={navigateTo} />}
             {adminTab === 'links' && <ManageLinks />}
             {adminTab === 'analytics' && <Analytics />}
-            {adminTab === 'ads' && <AdsSettings />}
             {adminTab === 'settings' && <Settings />}
           </main>
         </div>

@@ -4,7 +4,6 @@ import {
   PlusCircle,
   Link2,
   BarChart3,
-  Megaphone,
   Settings,
   LogOut,
   Film,
@@ -18,7 +17,6 @@ export default function Sidebar({ currentRoute, onNavigate, onLogout, isOpen, on
     { id: 'create', label: 'Create Movie Link', icon: PlusCircle },
     { id: 'links', label: 'Manage Links', icon: Link2 },
     { id: 'analytics', label: 'Click Analytics', icon: BarChart3 },
-    { id: 'ads', label: 'Ad Placements', icon: Megaphone },
     { id: 'settings', label: 'Website Settings', icon: Settings }
   ];
 

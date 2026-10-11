@@ -150,9 +150,28 @@ export default function Interstitial({ shortCode }) {
     };
   }, [timerRemaining, loading, errorState, completedDestination]);
 
+  // On-Click Pop-up / Pop-under (Smartlink Click Interstitial)
+  const [hasClickedPopup, setHasClickedPopup] = useState(false);
+
+  function triggerClickPopup(e) {
+    if (hasClickedPopup) return;
+    // Don't intercept explicit anchor links to avoid double open
+    if (e && e.target && e.target.closest('a')) return;
+
+    setHasClickedPopup(true);
+    try {
+      window.open(SMARTLINK_FALLBACK, '_blank');
+    } catch (err) {}
+  }
+
   // Handle Continue Click
-  async function handleContinue() {
+  async function handleContinue(e) {
     if (timerRemaining > 0 || continueLoading) return;
+
+    // Trigger on-click pop-up ad on continue/download action to guarantee CPM
+    try {
+      window.open(SMARTLINK_FALLBACK, '_blank');
+    } catch (err) {}
 
     setContinueLoading(true);
     try {
@@ -313,7 +332,7 @@ export default function Interstitial({ shortCode }) {
   const isTimerDone = timerRemaining === 0;
 
   return (
-    <div className="interstitial-container">
+    <div className="interstitial-container" onClick={triggerClickPopup}>
       {/* Brand Header */}
       <header style={{ width: '100%', maxWidth: '1160px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 0.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>

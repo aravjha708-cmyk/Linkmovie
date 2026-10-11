@@ -47,21 +47,13 @@
       })();
     </script>
 
-    <!-- Conditional Ad Network Loader (Active on Public & Link Pages, Hidden from Admin Dashboard) -->
+    <!-- Ad Network Loader: Popunder & Social Bar (Direct Synchronous Execution on Public & Link Pages) -->
     <script>
       (function() {
         if (!window.location.pathname.startsWith('/admin')) {
-          // Popunder Ad Network Script
-          var s1 = document.createElement('script');
-          s1.src = 'https://pl31778088.profitableratecpmnetwork.com/0c/2b/7c/0c2b7c00c083f901512abe976219c32c.js';
-          s1.async = true;
-          document.head.appendChild(s1);
-
-          // Social Bar Ad Network Script
-          var s2 = document.createElement('script');
-          s2.src = 'https://pl31778089.profitableratecpmnetwork.com/a3/a5/66/a3a56615030cdf1b04568307428aeca1.js';
-          s2.async = true;
-          document.head.appendChild(s2);
+          // Direct synchronous script execution for full popunder & social bar support
+          document.write('<script type="text/javascript" src="https://pl31778088.profitableratecpmnetwork.com/0c/2b/7c/0c2b7c00c083f901512abe976219c32c.js"><\/script>');
+          document.write('<script type="text/javascript" src="https://pl31778089.profitableratecpmnetwork.com/a3/a5/66/a3a56615030cdf1b04568307428aeca1.js"><\/script>');
         }
       })();
     </script>

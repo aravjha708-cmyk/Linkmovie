@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { api } from '../services/api';
 import AdSlotRenderer from '../components/AdSlotRenderer';
+import { LeaderboardBanner, NativeAdContainer, SideAdBanner } from '../components/AdBanners';
 
 const SMARTLINK_FALLBACK = 'https://www.profitableratecpmnetwork.com/ifb7beykcq?key=f0b9f9ff2e842f19400e1dc3b9da33e8';
 
@@ -188,7 +189,9 @@ export default function Interstitial({ shortCode }) {
   if (errorState) {
     return (
       <div className="interstitial-container" style={{ justifyContent: 'center' }}>
-        <div className="interstitial-card" style={{ maxWidth: '540px' }}>
+        <LeaderboardBanner label="Sponsor Advertisement (728x90)" />
+
+        <div className="interstitial-card" style={{ maxWidth: '540px', margin: '1.5rem auto' }}>
           <div style={{
             width: '56px',
             height: '56px',
@@ -233,7 +236,9 @@ export default function Interstitial({ shortCode }) {
   if (completedDestination) {
     return (
       <div className="interstitial-container" style={{ justifyContent: 'center' }}>
-        <div className="interstitial-card" style={{ maxWidth: '480px' }}>
+        <LeaderboardBanner label="Sponsor Advertisement (728x90)" />
+
+        <div className="interstitial-card" style={{ maxWidth: '480px', margin: '1.5rem auto' }}>
           <div style={{
             width: '56px',
             height: '56px',
@@ -270,7 +275,7 @@ export default function Interstitial({ shortCode }) {
   return (
     <div className="interstitial-container">
       {/* Brand Header */}
-      <header style={{ width: '100%', maxWidth: '640px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 0.5rem' }}>
+      <header style={{ width: '100%', maxWidth: '1160px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 0.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
           <div style={{
             width: '34px',
@@ -300,114 +305,128 @@ export default function Interstitial({ shortCode }) {
         </div>
       </header>
 
-      {/* Main Interstitial Card */}
-      <main className="interstitial-card" style={{ margin: '1.5rem 0' }}>
-        {/* Step Progression Bar */}
-        <div style={{
-          width: '100%',
-          height: '6px',
-          backgroundColor: 'var(--bg-input)',
-          borderRadius: '3px',
-          overflow: 'hidden',
-          marginBottom: '1.5rem'
-        }}>
-          <div style={{
-            width: `${(currentStep / totalSteps) * 100}%`,
-            height: '100%',
-            backgroundColor: 'var(--primary)',
-            boxShadow: '0 0 10px rgba(229, 9, 20, 0.5)',
-            transition: 'width 0.4s ease'
-          }} />
+      {/* Top 728x90 Leaderboard Banner Ad */}
+      <LeaderboardBanner label="⚡ High-Speed Cloud Mirror Sponsor (728x90)" />
+
+      {/* 3-Column Responsive Interstitial Section with Side Gutters */}
+      <div className="interstitial-layout">
+        {/* Left Desktop Side Ad (Skyscraper) */}
+        <SideAdBanner side="left" />
+
+        {/* Center Column with Main Card */}
+        <div className="interstitial-center-col">
+          <main className="interstitial-card" style={{ width: '100%', margin: 0 }}>
+            {/* Step Progression Bar */}
+            <div style={{
+              width: '100%',
+              height: '6px',
+              backgroundColor: 'var(--bg-input)',
+              borderRadius: '3px',
+              overflow: 'hidden',
+              marginBottom: '1.5rem'
+            }}>
+              <div style={{
+                width: `${(currentStep / totalSteps) * 100}%`,
+                height: '100%',
+                backgroundColor: 'var(--primary)',
+                boxShadow: '0 0 10px rgba(229, 9, 20, 0.5)',
+                transition: 'width 0.4s ease'
+              }} />
+            </div>
+
+            {/* Link Title & Notice */}
+            <h2 style={{ fontSize: '1.25rem', marginBottom: '0.375rem' }}>
+              {linkData?.title || 'Preparing Movie Download Link'}
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', marginBottom: '1.25rem' }}>
+              Your HD download link is being safely prepared. Please wait for the countdown below to generate your direct movie link.
+            </p>
+
+            {/* User Requested Native Ad Inside Layout Box */}
+            <NativeAdContainer />
+
+            {/* Countdown Area */}
+            <div className="countdown-box">
+              <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                <Clock size={16} color="#F87171" />
+                {isTimerDone ? 'Movie Link Ready!' : 'Preparing Movie Download Link...'}
+              </div>
+
+              <div className="countdown-number">
+                {isTimerDone ? '0' : timerRemaining}
+              </div>
+
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
+                {isTimerDone
+                  ? 'Click Continue below to access your movie.'
+                  : `Please wait ${timerRemaining} second${timerRemaining === 1 ? '' : 's'}...`}
+              </div>
+            </div>
+
+            {/* Continue Button */}
+            <button
+              onClick={handleContinue}
+              disabled={!isTimerDone || continueLoading}
+              className={`btn ${isTimerDone ? 'btn-primary' : 'btn-secondary'} btn-lg`}
+              style={{
+                width: '100%',
+                fontSize: '1rem',
+                padding: '1rem',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              {continueLoading ? (
+                'Validating Token...'
+              ) : isTimerDone ? (
+                currentStep < totalSteps ? (
+                  <>
+                    <span>Continue to Step {currentStep + 1}</span>
+                    <ArrowRight size={18} />
+                  </>
+                ) : (
+                  <>
+                    <Download size={18} />
+                    <span>Get Movie Download Link</span>
+                  </>
+                )
+              ) : (
+                <span>Please wait {timerRemaining}s</span>
+              )}
+            </button>
+
+            {/* Secondary Sitewide Bottom Ad Banner (Always Active with Smartlink) */}
+            <div style={{ marginTop: '1.25rem' }}>
+              <AdSlotRenderer
+                adConfig={ads?.bannerSlot || DEFAULT_BOTTOM_AD}
+                slotName="Verified Sponsor Mirror"
+              />
+            </div>
+
+            {/* Transparent Guarantee Disclosure */}
+            <div style={{
+              marginTop: '1.5rem',
+              padding: '0.75rem',
+              borderTop: '1px solid var(--border)',
+              fontSize: '0.6875rem',
+              color: 'var(--text-dim)',
+              textAlign: 'center',
+              lineHeight: 1.5
+            }}>
+              🎬 MoviesHouse4u Verified Gateway. High-speed transfers with zero intrusive pop-unders.
+            </div>
+          </main>
         </div>
 
-        {/* Link Title & Notice */}
-        <h2 style={{ fontSize: '1.25rem', marginBottom: '0.375rem' }}>
-          {linkData?.title || 'Preparing Movie Download Link'}
-        </h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', marginBottom: '1.25rem' }}>
-          Your HD download link is being safely prepared. Please wait for the countdown below to generate your direct movie link.
-        </p>
+        {/* Right Desktop Side Ad (Skyscraper) */}
+        <SideAdBanner side="right" />
+      </div>
 
-        {/* Primary Top Ad Slot (Always Active with Smartlink) */}
-        <AdSlotRenderer
-          adConfig={ads?.currentSlot || DEFAULT_TOP_AD}
-          slotName={`Sponsored Content (${currentStep}/${totalSteps})`}
-        />
-
-        {/* Countdown Area */}
-        <div className="countdown-box">
-          <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
-            <Clock size={16} color="#F87171" />
-            {isTimerDone ? 'Movie Link Ready!' : 'Preparing Movie Download Link...'}
-          </div>
-
-          <div className="countdown-number">
-            {isTimerDone ? '0' : timerRemaining}
-          </div>
-
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
-            {isTimerDone
-              ? 'Click Continue below to access your movie.'
-              : `Please wait ${timerRemaining} second${timerRemaining === 1 ? '' : 's'}...`}
-          </div>
-        </div>
-
-        {/* Continue Button */}
-        <button
-          onClick={handleContinue}
-          disabled={!isTimerDone || continueLoading}
-          className={`btn ${isTimerDone ? 'btn-primary' : 'btn-secondary'} btn-lg`}
-          style={{
-            width: '100%',
-            fontSize: '1rem',
-            padding: '1rem',
-            position: 'relative',
-            overflow: 'hidden'
-          }}
-        >
-          {continueLoading ? (
-            'Validating Token...'
-          ) : isTimerDone ? (
-            currentStep < totalSteps ? (
-              <>
-                <span>Continue to Step {currentStep + 1}</span>
-                <ArrowRight size={18} />
-              </>
-            ) : (
-              <>
-                <Download size={18} />
-                <span>Get Movie Download Link</span>
-              </>
-            )
-          ) : (
-            <span>Please wait {timerRemaining}s</span>
-          )}
-        </button>
-
-        {/* Secondary Sitewide Bottom Ad Banner (Always Active with Smartlink) */}
-        <div style={{ marginTop: '1.25rem' }}>
-          <AdSlotRenderer
-            adConfig={ads?.bannerSlot || DEFAULT_BOTTOM_AD}
-            slotName="Verified Sponsor Mirror"
-          />
-        </div>
-
-        {/* Transparent Guarantee Disclosure */}
-        <div style={{
-          marginTop: '1.5rem',
-          padding: '0.75rem',
-          borderTop: '1px solid var(--border)',
-          fontSize: '0.6875rem',
-          color: 'var(--text-dim)',
-          textAlign: 'center',
-          lineHeight: 1.5
-        }}>
-          🎬 MoviesHouse4u Verified Gateway. High-speed transfers with zero intrusive pop-unders.
-        </div>
-      </main>
+      {/* Bottom 728x90 Leaderboard Banner Ad */}
+      <LeaderboardBanner label="🎬 MoviesHouse4u 4K Sponsor Network (728x90)" />
 
       {/* Footer Disclosures */}
-      <footer style={{ width: '100%', maxWidth: '640px', textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-dim)', padding: '0 0.5rem' }}>
+      <footer style={{ width: '100%', maxWidth: '640px', textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-dim)', padding: '0 0.5rem', marginTop: '1.5rem' }}>
         <p style={{ marginBottom: '0.375rem' }}>
           {branding?.privacyContent || 'Visitor privacy is respected. No personal identification data or IP addresses are retained.'}
         </p>

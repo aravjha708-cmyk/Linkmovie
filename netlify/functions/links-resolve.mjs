@@ -40,19 +40,26 @@ export default async function handler(req) {
     );
   }
 
-  // Record valid Step 1 visit in concurrency-safe analytics
-  await recordEvent('visit', code, headers);
+  const stepParam = url.searchParams.get('step');
+  const isStep2 = stepParam === '2';
+
+  // Only record top-of-funnel raw visit if not an explicit step 2 resolve
+  if (!isStep2) {
+    await recordEvent('visit', code, headers);
+  }
 
   const settings = await getSettings();
 
-  // Create signed flow token for Step 1
   const flowType = link.flowType || 'two-step';
   const totalSteps = flowType === 'two-step' ? 2 : 1;
-  const countdown = link.countdownStep1 || settings.defaultCountdownStep1 || 10;
+  const currentStep = isStep2 && totalSteps > 1 ? 2 : 1;
+  const countdown = currentStep === 2
+    ? (link.countdownStep2 || settings.defaultCountdownStep2 || 8)
+    : (link.countdownStep1 || settings.defaultCountdownStep1 || 10);
 
   const flowToken = generateFlowToken({
     code,
-    step: 1,
+    step: currentStep,
     flowType,
     totalSteps,
     countdown
@@ -65,7 +72,7 @@ export default async function handler(req) {
       code,
       title: link.title || 'Protected Asset Download',
       flowType,
-      currentStep: 1,
+      currentStep,
       totalSteps,
       countdown
     },
@@ -78,12 +85,17 @@ export default async function handler(req) {
       privacyContent: settings.privacyContent
     },
     ads: {
-      currentSlot: settings.ads?.step1 || {
+      currentSlot: currentStep === 2 ? (settings.ads?.step2 || {
+        enabled: true,
+        title: '⚡ High Speed 10 Gbps Direct Download Mirror',
+        type: 'banner',
+        targetUrl: 'https://www.profitableratecpmnetwork.com/ifb7beykcq?key=f0b9f9ff2e842f19400e1dc3b9da33e8'
+      }) : (settings.ads?.step1 || {
         enabled: true,
         title: '⚡ Fast Server 4K Streaming & Cloud Mirror',
         type: 'banner',
         targetUrl: 'https://www.profitableratecpmnetwork.com/ifb7beykcq?key=f0b9f9ff2e842f19400e1dc3b9da33e8'
-      },
+      }),
       bannerSlot: settings.ads?.banner || {
         enabled: true,
         title: 'Verified 4K High Speed Cloud Sponsor',

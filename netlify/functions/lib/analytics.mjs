@@ -49,7 +49,7 @@ export async function recordEvent(eventType, code, reqHeaders = {}) {
 
     // Also update cached link record asynchronously if link exists
     // (tolerant of concurrent updates as event log is the authoritative source)
-    updateLinkQuickStats(code, eventType, dateStr).catch(() => {});
+    await updateLinkQuickStats(code, eventType, dateStr).catch(() => {});
 
     return { recorded: true, id: eventId };
   } catch (err) {

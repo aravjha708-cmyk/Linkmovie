@@ -72,20 +72,51 @@ export default function Interstitial({ shortCode }) {
     async function resolve() {
       setLoading(true);
       setErrorState(null);
+      const search = typeof window !== 'undefined' ? window.location.search : '';
+      const isStep2Url = search === '?2' || search.startsWith('?2&') || new URLSearchParams(search).get('step') === '2';
+
       try {
-        const res = await api.resolveLink(shortCode);
+        const res = await api.resolveLink(shortCode, isStep2Url ? 2 : 1);
         if (res.success && res.viable) {
           setLinkData(res.link);
           setBranding(res.branding);
-          setFlowToken(res.flowToken);
-          setCurrentStep(res.link.currentStep);
-          setTotalSteps(res.link.totalSteps);
-          setCountdown(res.link.countdown);
-          setTimerRemaining(res.link.countdown);
-          setAds({
-            currentSlot: res.ads?.currentSlot || DEFAULT_TOP_AD,
-            bannerSlot: res.ads?.bannerSlot || DEFAULT_BOTTOM_AD
-          });
+
+          if (isStep2Url) {
+            // Check for valid step 2 flow token generated from step 1
+            let storedStep2 = null;
+            try {
+              storedStep2 = sessionStorage.getItem(`flow_${shortCode}_step2`) || localStorage.getItem(`flow_${shortCode}_step2`);
+            } catch (e) {}
+
+            if (storedStep2) {
+              const parsed = JSON.parse(storedStep2);
+              setFlowToken(parsed.flowToken);
+              setCurrentStep(2);
+              setTotalSteps(parsed.totalSteps || res.link.totalSteps || 2);
+              const cd = parsed.countdown || res.link.countdown || 8;
+              setCountdown(cd);
+              setTimerRemaining(cd);
+              setAds(parsed.ads || {
+                currentSlot: res.ads?.currentSlot || DEFAULT_TOP_AD,
+                bannerSlot: res.ads?.bannerSlot || DEFAULT_BOTTOM_AD
+              });
+            } else {
+              // Direct access to Step 2 without completing Step 1: redirect to Step 1
+              window.location.replace(`/${shortCode}`);
+              return;
+            }
+          } else {
+            // Standard Step 1
+            setFlowToken(res.flowToken);
+            setCurrentStep(1);
+            setTotalSteps(res.link.totalSteps);
+            setCountdown(res.link.countdown);
+            setTimerRemaining(res.link.countdown);
+            setAds({
+              currentSlot: res.ads?.currentSlot || DEFAULT_TOP_AD,
+              bannerSlot: res.ads?.bannerSlot || DEFAULT_BOTTOM_AD
+            });
+          }
         } else {
           setErrorState({
             reason: res.reason || 'UNAVAILABLE',
@@ -133,21 +164,30 @@ export default function Interstitial({ shortCode }) {
 
       if (res.completed && res.destinationUrl) {
         // Final destination reached
+        try {
+          sessionStorage.removeItem(`flow_${shortCode}_step2`);
+          localStorage.removeItem(`flow_${shortCode}_step2`);
+        } catch (e) {}
+
         setCompletedDestination(res.destinationUrl);
         setTimeout(() => {
           window.location.href = res.destinationUrl;
         }, 1200);
       } else if (res.nextStep) {
-        // Advance to step 2
-        setCurrentStep(res.nextStep);
-        setFlowToken(res.flowToken);
-        setCountdown(res.countdown);
-        setTimerRemaining(res.countdown);
-        setAds({
-          currentSlot: res.ads?.currentSlot || DEFAULT_TOP_AD,
-          bannerSlot: res.ads?.bannerSlot || DEFAULT_BOTTOM_AD
-        });
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Step 1 completed: Persist verified step 2 token and navigate to separate Step 2 page URL (/code?2)
+        // This triggers a full browser reload, giving fresh ad impressions across all network slots
+        try {
+          const step2Data = {
+            flowToken: res.flowToken,
+            countdown: res.countdown,
+            totalSteps: res.totalSteps,
+            ads: res.ads
+          };
+          sessionStorage.setItem(`flow_${shortCode}_step2`, JSON.stringify(step2Data));
+          localStorage.setItem(`flow_${shortCode}_step2`, JSON.stringify(step2Data));
+        } catch (e) {}
+
+        window.location.href = `/${shortCode}?2`;
       }
     } catch (err) {
       alert(err.message || 'Failed to progress to the next step. Please refresh and try again.');
@@ -336,10 +376,14 @@ export default function Interstitial({ shortCode }) {
 
             {/* Link Title & Notice */}
             <h2 style={{ fontSize: '1.25rem', marginBottom: '0.375rem' }}>
-              {linkData?.title || 'Preparing Movie Download Link'}
+              {currentStep === 2
+                ? `${linkData?.title || 'Movie Download'} (Step 2 of 2)`
+                : (linkData?.title || 'Preparing Movie Download Link')}
             </h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', marginBottom: '1.25rem' }}>
-              Your HD download link is being safely prepared. Please wait for the countdown below to generate your direct movie link.
+              {currentStep === 2
+                ? 'Almost there! Complete this final verification step to unlock your verified direct download link.'
+                : 'Your HD download link is being safely prepared. Please wait for the countdown below to generate your direct movie link.'}
             </p>
 
             {/* User Requested Native Ad Inside Layout Box */}
@@ -349,7 +393,9 @@ export default function Interstitial({ shortCode }) {
             <div className="countdown-box">
               <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
                 <Clock size={16} color="#F87171" />
-                {isTimerDone ? 'Movie Link Ready!' : 'Preparing Movie Download Link...'}
+                {isTimerDone
+                  ? (currentStep === 2 ? 'Verified Movie Download Link Ready!' : 'Step 1 Complete! Continue Below')
+                  : (currentStep === 2 ? 'Finalizing 4K Cloud Mirror Link...' : 'Preparing Movie Download Link...')}
               </div>
 
               <div className="countdown-number">
@@ -358,7 +404,7 @@ export default function Interstitial({ shortCode }) {
 
               <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
                 {isTimerDone
-                  ? 'Click Continue below to access your movie.'
+                  ? (currentStep === 2 ? 'Click Get Movie Download Link below to start downloading.' : 'Click Continue to Step 2 below.')
                   : `Please wait ${timerRemaining} second${timerRemaining === 1 ? '' : 's'}...`}
               </div>
             </div>

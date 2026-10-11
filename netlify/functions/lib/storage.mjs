@@ -42,12 +42,21 @@ class LocalStore {
     const filePath = path.join(this.dir, this._safeFileName(key));
     try {
       const data = await fs.readFile(filePath, 'utf-8');
+      if (!data || !data.trim()) return null;
       if (options.type === 'json' || !options.type) {
         return JSON.parse(data);
       }
       return data;
     } catch (err) {
       if (err.code === 'ENOENT') return null;
+      if (err instanceof SyntaxError) {
+        // Retry once after 30ms if read during momentary disk write
+        await new Promise((r) => setTimeout(r, 30));
+        try {
+          const retryData = await fs.readFile(filePath, 'utf-8');
+          if (retryData && retryData.trim()) return JSON.parse(retryData);
+        } catch (e) {}
+      }
       throw err;
     }
   }
@@ -55,7 +64,8 @@ class LocalStore {
   async setJSON(key, data) {
     await this._ensureDir();
     const filePath = path.join(this.dir, this._safeFileName(key));
-    await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    const content = JSON.stringify(data, null, 2);
+    await fs.writeFile(filePath, content, 'utf-8');
   }
 
   async delete(key) {

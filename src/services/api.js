@@ -45,7 +45,7 @@ export const api = {
   deleteLink: (code) => request('links-delete', { method: 'POST', body: { code } }),
 
   // Flow & Resolver
-  resolveLink: (code) => request(`links-resolve?code=${encodeURIComponent(code)}`, { method: 'GET' }),
+  resolveLink: (code, step) => request(`links-resolve?code=${encodeURIComponent(code)}${step ? `&step=${encodeURIComponent(step)}` : ''}`, { method: 'GET' }),
   continueFlow: (flowData) => request('flow-continue', { method: 'POST', body: flowData }),
 
   // Analytics & Settings

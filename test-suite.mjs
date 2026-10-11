@@ -66,6 +66,7 @@ async function runTests() {
 
   // 5. Link Creation API
   console.log('\nTest 5: Link Creation API');
+  await linksStore.delete('link:testasset1');
   const { token: adminToken } = createSessionToken('admin');
   const authHeaders = {
     Cookie: `admin_session_token=${adminToken}`,
@@ -113,7 +114,7 @@ async function runTests() {
   const unauthRes = await createLinkHandler(unauthReq);
   assert(unauthRes.status === 401, 'Unauthenticated request correctly rejected with 401 Unauthorized');
 
-  // 8. Public Link Resolution (Step 1)
+  // 8. Public Link Resolution (Step 1 & Step 2 URLs)
   console.log('\nTest 8: Public Link Resolution & Flow Initialization');
   const resolveReq = new Request('http://localhost/api/links-resolve?code=testasset1', {
     method: 'GET'
@@ -125,6 +126,15 @@ async function runTests() {
   assert(resolveJson.link.currentStep === 1, 'Current step initialized to 1');
   assert(resolveJson.flowToken, 'Signed flow token returned');
   assert(resolveJson.destinationUrl === undefined, 'Original destination URL is NOT exposed to client in step 1');
+
+  // Verify separate Step 2 URL resolution (?code=testasset1&step=2)
+  const resolveStep2Req = new Request('http://localhost/api/links-resolve?code=testasset1&step=2', {
+    method: 'GET'
+  });
+  const resolveStep2Res = await resolveLinkHandler(resolveStep2Req);
+  assert(resolveStep2Res.status === 200, 'Step 2 URL resolves with 200 OK');
+  const resolveStep2Json = await resolveStep2Res.json();
+  assert(resolveStep2Json.link.currentStep === 2, 'Step 2 resolution correctly sets currentStep to 2');
 
   // 9. Two-Step Monetization Flow Progression
   console.log('\nTest 9: Two-Step Flow Verification');

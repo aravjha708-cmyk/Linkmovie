@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" rx="8" fill="#12151D"/>
+  <rect x="0.5" y="0.5" width="31" height="31" rx="7.5" stroke="#262B38"/>
+  <path d="M7 8C7 6.89543 7.89543 6 9 6H23C24.1046 6 25 6.89543 25 8V24C25 25.1046 24.1046 26 23 26H9C7.89543 26 7 25.1046 7 24V8Z" fill="#E50914" fill-opacity="0.2" stroke="#E50914" stroke-width="1.8"/>
+  <!-- Clapper stripes -->
+  <path d="M7 11H25M11 6L9 11M17 6L15 11M23 6L21 11" stroke="#E50914" stroke-width="1.6" stroke-linecap="round"/>
+  <!-- Play triangle in center -->
+  <polygon points="14,14 20,18 14,22" fill="#E50914"/>
+</svg>

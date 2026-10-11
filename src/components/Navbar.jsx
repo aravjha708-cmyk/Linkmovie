@@ -19,11 +19,6 @@ export default function Navbar({ currentTitle, onToggleSidebar, isDevAuth }) {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-        {isDevAuth && (
-          <span className="badge badge-expired" style={{ fontSize: '0.6875rem' }}>
-            Dev Credentials Active
-          </span>
-        )}
         <div className="badge badge-active">
           <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--success)', display: 'inline-block' }} />
           Blobs Online

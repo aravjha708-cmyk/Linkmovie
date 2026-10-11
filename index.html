@@ -10,11 +10,24 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-    <!-- Popunder Advertising Network -->
-    <script src="https://pl31778088.profitableratecpmnetwork.com/0c/2b/7c/0c2b7c00c083f901512abe976219c32c.js"></script>
+    <!-- Conditional Ad Network Loader (Active on Public & Link Pages, Hidden from Admin Dashboard) -->
+    <script>
+      (function() {
+        if (!window.location.pathname.startsWith('/admin')) {
+          // Popunder Ad Network Script
+          var s1 = document.createElement('script');
+          s1.src = 'https://pl31778088.profitableratecpmnetwork.com/0c/2b/7c/0c2b7c00c083f901512abe976219c32c.js';
+          s1.async = true;
+          document.head.appendChild(s1);
 
-    <!-- Social Bar Advertising Network -->
-    <script src="https://pl31778089.profitableratecpmnetwork.com/a3/a5/66/a3a56615030cdf1b04568307428aeca1.js"></script>
+          // Social Bar Ad Network Script
+          var s2 = document.createElement('script');
+          s2.src = 'https://pl31778089.profitableratecpmnetwork.com/a3/a5/66/a3a56615030cdf1b04568307428aeca1.js';
+          s2.async = true;
+          document.head.appendChild(s2);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

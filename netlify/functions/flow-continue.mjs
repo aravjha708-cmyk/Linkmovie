@@ -69,8 +69,18 @@ export default async function handler(req) {
       countdown,
       flowToken: nextFlowToken,
       ads: {
-        currentSlot: settings.ads.step2.enabled ? settings.ads.step2 : null,
-        bannerSlot: settings.ads.banner.enabled ? settings.ads.banner : null
+        currentSlot: settings.ads?.step2 || {
+          enabled: true,
+          title: '⚡ High Speed 10 Gbps Direct Download Mirror',
+          type: 'banner',
+          targetUrl: 'https://www.profitableratecpmnetwork.com/ifb7beykcq?key=f0b9f9ff2e842f19400e1dc3b9da33e8'
+        },
+        bannerSlot: settings.ads?.banner || {
+          enabled: true,
+          title: 'Verified 4K High Speed Cloud Sponsor',
+          type: 'banner',
+          targetUrl: 'https://www.profitableratecpmnetwork.com/ifb7beykcq?key=f0b9f9ff2e842f19400e1dc3b9da33e8'
+        }
       }
     });
   }

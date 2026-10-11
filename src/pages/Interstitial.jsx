@@ -7,11 +7,28 @@ import {
   Clock,
   AlertCircle,
   Play,
-  Sparkles,
-  RefreshCw
+  Zap,
+  RefreshCw,
+  ExternalLink
 } from 'lucide-react';
 import { api } from '../services/api';
 import AdSlotRenderer from '../components/AdSlotRenderer';
+
+const SMARTLINK_FALLBACK = 'https://www.profitableratecpmnetwork.com/ifb7beykcq?key=f0b9f9ff2e842f19400e1dc3b9da33e8';
+
+const DEFAULT_TOP_AD = {
+  enabled: true,
+  title: '⚡ Fast Server 4K Streaming & Cloud Mirror',
+  type: 'banner',
+  targetUrl: SMARTLINK_FALLBACK
+};
+
+const DEFAULT_BOTTOM_AD = {
+  enabled: true,
+  title: 'Verified 4K High Speed Cloud Sponsor (10 Gbps)',
+  type: 'banner',
+  targetUrl: SMARTLINK_FALLBACK
+};
 
 export default function Interstitial({ shortCode }) {
   const [loading, setLoading] = useState(true);
@@ -23,11 +40,31 @@ export default function Interstitial({ shortCode }) {
   const [totalSteps, setTotalSteps] = useState(1);
   const [countdown, setCountdown] = useState(10);
   const [timerRemaining, setTimerRemaining] = useState(10);
-  const [ads, setAds] = useState({ currentSlot: null, bannerSlot: null });
+  const [ads, setAds] = useState({ currentSlot: DEFAULT_TOP_AD, bannerSlot: DEFAULT_BOTTOM_AD });
   const [continueLoading, setContinueLoading] = useState(false);
   const [completedDestination, setCompletedDestination] = useState(null);
 
   const timerRef = useRef(null);
+
+  // Ensure Ad Network scripts are active on every link page
+  useEffect(() => {
+    try {
+      if (!document.getElementById('lm-popunder-ad')) {
+        const s1 = document.createElement('script');
+        s1.id = 'lm-popunder-ad';
+        s1.src = 'https://pl31778088.profitableratecpmnetwork.com/0c/2b/7c/0c2b7c00c083f901512abe976219c32c.js';
+        s1.async = true;
+        document.head.appendChild(s1);
+      }
+      if (!document.getElementById('lm-socialbar-ad')) {
+        const s2 = document.createElement('script');
+        s2.id = 'lm-socialbar-ad';
+        s2.src = 'https://pl31778089.profitableratecpmnetwork.com/a3/a5/66/a3a56615030cdf1b04568307428aeca1.js';
+        s2.async = true;
+        document.head.appendChild(s2);
+      }
+    } catch (e) {}
+  }, []);
 
   // Initial Link Resolution
   useEffect(() => {
@@ -44,7 +81,10 @@ export default function Interstitial({ shortCode }) {
           setTotalSteps(res.link.totalSteps);
           setCountdown(res.link.countdown);
           setTimerRemaining(res.link.countdown);
-          setAds(res.ads);
+          setAds({
+            currentSlot: res.ads?.currentSlot || DEFAULT_TOP_AD,
+            bannerSlot: res.ads?.bannerSlot || DEFAULT_BOTTOM_AD
+          });
         } else {
           setErrorState({
             reason: res.reason || 'UNAVAILABLE',
@@ -93,7 +133,6 @@ export default function Interstitial({ shortCode }) {
       if (res.completed && res.destinationUrl) {
         // Final destination reached
         setCompletedDestination(res.destinationUrl);
-        // Small graceful pause so visitor sees confirmation before redirect
         setTimeout(() => {
           window.location.href = res.destinationUrl;
         }, 1200);
@@ -103,7 +142,10 @@ export default function Interstitial({ shortCode }) {
         setFlowToken(res.flowToken);
         setCountdown(res.countdown);
         setTimerRemaining(res.countdown);
-        setAds(res.ads);
+        setAds({
+          currentSlot: res.ads?.currentSlot || DEFAULT_TOP_AD,
+          bannerSlot: res.ads?.bannerSlot || DEFAULT_BOTTOM_AD
+        });
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } catch (err) {
@@ -146,7 +188,7 @@ export default function Interstitial({ shortCode }) {
   if (errorState) {
     return (
       <div className="interstitial-container" style={{ justifyContent: 'center' }}>
-        <div className="interstitial-card" style={{ maxWidth: '520px' }}>
+        <div className="interstitial-card" style={{ maxWidth: '540px' }}>
           <div style={{
             width: '56px',
             height: '56px',
@@ -165,27 +207,23 @@ export default function Interstitial({ shortCode }) {
             {errorState.reason === 'EXPIRED' ? 'Movie Link Has Expired' : errorState.reason === 'DISABLED' ? 'Movie Link Currently Inactive' : 'Movie Link Not Found'}
           </h2>
 
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '1.75rem', lineHeight: 1.6 }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
             {errorState.message}
           </p>
 
-          <div style={{
-            background: 'var(--bg-card-sub)',
-            padding: '1rem',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '0.8125rem',
-            color: 'var(--text-dim)',
-            marginBottom: '1.5rem',
-            textAlign: 'left'
-          }}>
-            <div>• Link Code: <code style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>/{shortCode}</code></div>
-            <div>• Reason: <span style={{ color: 'var(--text-main)' }}>{errorState.reason}</span></div>
-            <div style={{ marginTop: '0.25rem' }}>The requested movie file or mirror has been updated or removed by the uploader.</div>
+          {/* Ad slot in unavailable state */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <AdSlotRenderer adConfig={DEFAULT_TOP_AD} slotName="Fast Cloud Mirror" />
           </div>
 
-          <a href="/" className="btn btn-secondary btn-sm">
-            Return to Homepage
-          </a>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+            <a href="/" className="btn btn-secondary btn-sm">
+              Return to Homepage
+            </a>
+            <a href="https://movieshouse4u.netlify.app/" target="_blank" rel="noreferrer" className="btn btn-primary btn-sm">
+              Browse MoviesHouse4u
+            </a>
+          </div>
         </div>
       </div>
     );
@@ -290,9 +328,9 @@ export default function Interstitial({ shortCode }) {
           Your HD download link is being safely prepared. Please wait for the countdown below to generate your direct movie link.
         </p>
 
-        {/* Primary Ad Slot (Step 1 or Step 2) */}
+        {/* Primary Top Ad Slot (Always Active with Smartlink) */}
         <AdSlotRenderer
-          adConfig={ads.currentSlot}
+          adConfig={ads?.currentSlot || DEFAULT_TOP_AD}
           slotName={`Sponsored Content (${currentStep}/${totalSteps})`}
         />
 
@@ -346,12 +384,13 @@ export default function Interstitial({ shortCode }) {
           )}
         </button>
 
-        {/* Secondary Sitewide Banner Ad */}
-        {ads.bannerSlot && (
-          <div style={{ marginTop: '1.25rem' }}>
-            <AdSlotRenderer adConfig={ads.bannerSlot} slotName="Verified Partner" />
-          </div>
-        )}
+        {/* Secondary Sitewide Bottom Ad Banner (Always Active with Smartlink) */}
+        <div style={{ marginTop: '1.25rem' }}>
+          <AdSlotRenderer
+            adConfig={ads?.bannerSlot || DEFAULT_BOTTOM_AD}
+            slotName="Verified Sponsor Mirror"
+          />
+        </div>
 
         {/* Transparent Guarantee Disclosure */}
         <div style={{

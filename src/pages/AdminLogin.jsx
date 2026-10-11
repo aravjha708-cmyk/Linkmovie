@@ -131,25 +131,6 @@ export default function AdminLogin({ onLoginSuccess }) {
             {!loading && <ArrowRight size={16} />}
           </button>
         </form>
-
-        <div style={{
-          marginTop: '1.75rem',
-          padding: '0.875rem',
-          backgroundColor: 'var(--bg-card-sub)',
-          border: '1px solid var(--border)',
-          borderRadius: 'var(--radius-md)',
-          fontSize: '0.75rem',
-          color: 'var(--text-muted)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontWeight: 600, color: '#F87171', marginBottom: '0.25rem' }}>
-            <Info size={14} />
-            <span>Default Dev Credentials</span>
-          </div>
-          <div>Default password: <code style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>Admin@123456</code></div>
-          <div style={{ marginTop: '0.25rem', color: 'var(--text-dim)' }}>
-            To change, set <code style={{ fontFamily: 'var(--font-mono)' }}>ADMIN_PASSWORD</code> in Netlify Environment Variables.
-          </div>
-        </div>
       </div>
     </div>
   );

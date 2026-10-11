@@ -1,5 +1,7 @@
 import { settingsStore } from './storage.mjs';
 
+const SMARTLINK_URL = 'https://www.profitableratecpmnetwork.com/ifb7beykcq?key=f0b9f9ff2e842f19400e1dc3b9da33e8';
+
 const DEFAULT_SETTINGS = {
   websiteName: 'MoviesHouse4u',
   tagline: 'Links of MoviesHouse4u - Fast HD Movie & Media Download Gateway',
@@ -11,27 +13,27 @@ const DEFAULT_SETTINGS = {
   privacyContent: 'We prioritize visitor privacy. No personal identification data or IP addresses are permanently retained.',
   ads: {
     step1: {
-      enabled: false,
-      title: 'Partner Promotion',
+      enabled: true,
+      title: '⚡ Fast Server 4K Streaming & Cloud Mirror',
       type: 'banner', // 'banner' | 'html'
       bannerUrl: '',
-      targetUrl: '',
+      targetUrl: SMARTLINK_URL,
       html: ''
     },
     step2: {
-      enabled: false,
-      title: 'Sponsored Media Tools',
+      enabled: true,
+      title: '⚡ High Speed 10 Gbps Direct Download Mirror',
       type: 'banner',
       bannerUrl: '',
-      targetUrl: '',
+      targetUrl: SMARTLINK_URL,
       html: ''
     },
     banner: {
-      enabled: false,
-      title: 'Verified Sponsor',
+      enabled: true,
+      title: 'Verified 4K High Speed Cloud Sponsor',
       type: 'banner',
       bannerUrl: '',
-      targetUrl: '',
+      targetUrl: SMARTLINK_URL,
       html: ''
     }
   }

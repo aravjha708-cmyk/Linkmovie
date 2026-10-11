@@ -142,11 +142,22 @@ export default function MovieHome({ onNavigate }) {
               href="https://movieshouse4u.netlify.app/"
               target="_blank"
               rel="noreferrer"
-              className="btn btn-primary btn-lg"
+              className="btn btn-secondary btn-lg"
               style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
               <span>Explore Movies on MoviesHouse4u</span>
               <ExternalLink size={16} />
+            </a>
+
+            <a
+              href="https://www.profitableratecpmnetwork.com/ifb7beykcq?key=f0b9f9ff2e842f19400e1dc3b9da33e8"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-primary btn-lg"
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            >
+              <Zap size={16} />
+              <span>⚡ Fast 4K Server Mirror</span>
             </a>
           </div>
         </div>
